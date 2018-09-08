@@ -7,6 +7,13 @@
   <body>
   <div class="grid-container">
   <?php include_once "predlozak/header.php"?>
+  <?php 
+  if(isset($_POST["login"])){
+if(!isset($_POST["korisnik"])){
+  echo "unesi korisnika";
+}
+  }
+  ?>
 <div class="title-bar" data-responsive-toggle="example-menu" data-hide-for="medium">
 <button class="menu-icon" type="button" data-toggle="example-menu"></button>
 <div class="title-bar-title"><?php echo $nazivAPP ?></div>
@@ -36,14 +43,33 @@
 </div>
 </div>
   <div class="grid-x grid-padding-x" >
-   <form class="log-in-form" action="autorizirano.php" method="post" style=" margin: 0 auto;">
-  <label>Name
-    <input type="text" name="korisnik">
+   <form class="log-in-form" method="post" action="autorizirano.php" style=" margin: 0 auto;">
+  <label>Ime
+    <input type="text" name="korisnik" id="korisnik">
   </label>
-  <label>Password
+  <label>Lozinka
     <input type="text" name="lozinka">
   </label>
-  <p><input type="submit" class="button expanded" value="Log in"></input></p>
+  <?php
+  if(isset($_GET["greska"])){
+    switch($_GET["greska"]){
+      case "1": 
+      echo "<p class=logingreska>*upiši ime i lozinku</p>";
+      break;
+      case "2": 
+      echo "<p class=logingreska>*upiši ime</p>";
+      break;
+      case "3": 
+      echo "<p class=logingreska>*upiši lozinku</p>";
+      break;
+      case "4": 
+      echo "<p class=logingreska>*upiši ispravno ime i lozinku</p>";
+      break;
+    } 
+
+  }
+  ?>
+  <p><input type="submit" class="button expanded" name="login" value="Log in"></input></p>
 </form>
 </div>
   <div style="text-align: center;">
@@ -51,4 +77,19 @@
  </div>
  <?php include_once "predlozak/skripte.php"?>
   </body>
+  <style>
+   .logingreska {
+     text-align:center;
+     background-color: blue;
+     animation: pulse 1s infinite;
+   }
+   @keyframes pulse {
+  0% {
+    background-color: blue;
+  }
+  100% {
+    background-color: #FF4136;
+  }
+}
+  </style>
 </html>

@@ -1,5 +1,5 @@
 <?php
-include_once "../konfiguracija.php";
+include_once "../../konfiguracija.php";
 if(!isset($_SESSION["bok"])){
     header("location:" . $putanja . "odjava.php");
 }

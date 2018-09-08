@@ -14,12 +14,13 @@
                   <a>Klub</a>
                   <ul class="menu vertical">
                  
-                    <li><a href="<?php echo $putanja;?>skola/kategorija.php">Kategorije</a></li>
+                    <li><a href="<?php echo $putanja;?>skola/kategorija/kategorija.php">Kategorije</a></li>
                     <?php if(isset($_SESSION["bok"])): ?>
-                    <li><a href="<?php echo $putanja;?>skola/uprava.php">Zaposlenici</a></li>
+                    <li><a href="<?php echo $putanja;?>skola/zaposlenik/zaposlenici.php">Zaposlenici</a></li>
+                    <li><a href="<?php echo $putanja;?>skola/clanovi/clanovi.php">Članovi</a></li>
                     <?php else:?>
-                    <li><a href="<?php echo $putanja;?>skola/uprava.php">Uprava</a></li>
-                    <li><a href="<?php echo $putanja;?>skola/treneri.php">Treneri</a></li>                   
+                    <li><a href="<?php echo $putanja;?>skola/zaposlenik/zaposlenici.php">Uprava</a></li>
+                    <li><a href="<?php echo $putanja;?>skola/zaposlenik/treneri.php">Treneri</a></li>                   
                     <?php endif;?>
                     
                   </ul>

@@ -1,4 +1,4 @@
-<?php include_once "../konfiguracija.php";
+<?php include_once "../../konfiguracija.php";
 
 if(!isset($_SESSION["bok"]))
 {
@@ -12,30 +12,30 @@ if(isset($_POST["promjeni"]))
     move_uploaded_file($tmp_slike,$upload_datoteka.$ime_slike);
     /* ako je nadredeni 1(uprava),dodaj promjenjene podatke u zaposlenika a obrisi tog zaposlenika iz trenera;
     promjena trenera u upravu */
-    if($_POST["nadredeni"]==1)
+    if($_POST["radnomjesto"]==1)
     {
     $updateZaposlenika=$veza->prepare(
         "start transaction;
         update zaposlenik set ime=:ime, prezime=:prezime, oib=:oib, email=:email, mob=:mob, 
-        radnomjesto=:radnomjesto, ziroracun=:ziroracun, nadredeni=:nadredeni, image='$upload_datoteka$ime_slike' where sifra=:sifra;
+        radnomjesto=:radnomjesto, ziroracun=:ziroracun, image='$upload_datoteka$ime_slike' where sifra=:sifra;
         delete from trener where zaposlenik=:sifra;
         commit; ");
     unset($_POST["promjeni"]);
     $updateZaposlenika->execute($_POST);
-    header("location:uprava.php");
+    header("location:zaposlenici.php");
     }
     /* promjena zaposlenika uprave u trenera */
     else
     {
-        $updateTreneraiZap=$veza->prepare(
+    $updateTreneraiZap=$veza->prepare(
     "start transaction;
     insert into trener (zaposlenik) values (:sifra);
     update zaposlenik set ime=:ime, prezime=:prezime, oib=:oib, email=:email, mob=:mob, 
-    radnomjesto=:radnomjesto, ziroracun=:ziroracun, nadredeni=:nadredeni, image='$upload_datoteka$ime_slike' where sifra=:sifra;
+    radnomjesto=:radnomjesto, ziroracun=:ziroracun, image='$upload_datoteka$ime_slike' where sifra=:sifra;
     commit; ");
     unset($_POST["promjeni"]);
     $updateTreneraiZap->execute($_POST);
-    header("location:uprava.php");
+    header("location:zaposlenici.php");
     }
     
 }
@@ -49,12 +49,12 @@ $o=$promjenaZaposlenika->fetch(PDO::FETCH_OBJ);
 <!doctype html>
 <html class="no-js" lang="en" dir="ltr">
   <head>
-    <?php include_once "../predlozak/head.php"?>
+    <?php include_once "../../predlozak/head.php"?>
   </head>
 <body>
   <div class="grid-container">
-<?php include_once "../predlozak/header.php"?>
-<?php include_once "../predlozak/menu.php"?>
+<?php include_once "../../predlozak/header.php"?>
+<?php include_once "../../predlozak/menu.php"?>
    <form class="callout text-center" action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data">
         <div class="floated-label-wrapper">
             <label for="ime">Ime</label>
@@ -77,17 +77,13 @@ $o=$promjenaZaposlenika->fetch(PDO::FETCH_OBJ);
             <input value="<?php echo $o->mob ?>" autocomplete="off" type="text" id="mob" name="mob">
         </div>
         <div class="floated-label-wrapper">
-            <label for="radnomjesto">radnomjesto</label>
-            <input value="<?php echo $o->radnomjesto ?>" autocomplete="off" type="text" id="radnomjesto" name="radnomjesto">
-        </div>
-        <div class="floated-label-wrapper">
             <label for="ziroracun">ziroracun</label>
             <input value="<?php echo $o->ziroracun ?>" autocomplete="off" type="text" id="ziroracun" name="ziroracun">
         </div>
         <div class="floated-label-wrapper">
-            <label for="nadredeni">nadredeni</label>
-            <input value="1" <?php if($o->nadredeni==1){ echo "checked";} ?>  autocomplete="off" type="radio"  id="nadredeni" name="nadredeni"  >Uprava</br>
-            <input value="2"<?php if($o->nadredeni==2){ echo "checked";} ?>    autocomplete="off" type="radio"  id="nadredeni" name="nadredeni"  >Trener</br>
+            <label for="radnomjesto">radnomjesto</label>
+            <input value="1" <?php if($o->radnomjesto==1){ echo "checked";} ?>  autocomplete="off" type="radio"  id="radnomjesto" name="radnomjesto"  >Uprava</br>
+            <input value="2"<?php if($o->radnomjesto==2){ echo "checked";} ?>    autocomplete="off" type="radio"  id="radnomjesto" name="radnomjesto"  >Trener</br>
         </div>
         <div class="floated-label-wrapper">
             <label for="image">Slika</label>
@@ -96,7 +92,7 @@ $o=$promjenaZaposlenika->fetch(PDO::FETCH_OBJ);
           <input type="hidden" name="sifra" value="<?php echo $o->sifra ?>" />
           <input class="button expanded" type="submit" name="promjeni" value="Promjeni podatke">
         </form>
-<?php include_once "../predlozak/footer.php"?>
-<?php include_once "../predlozak/skripte.php"?>
+<?php include_once "../../predlozak/footer.php"?>
+<?php include_once "../../predlozak/skripte.php"?>
 </body>
 </html>
