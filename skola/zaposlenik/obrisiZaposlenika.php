@@ -11,10 +11,11 @@ switch (true){
         $brisanjeZaposlenika->execute($_GET);
         header("location: zaposlenici.php");
     default:
-        $brisanjeZaposlenika = $veza->prepare("start transaction;
-delete from trener where zaposlenik =:zaposlenik;
-delete from zaposlenik where sifra=:sifra;
-commit;");
+        $brisanjeZaposlenika = $veza->prepare(
+            "start transaction;
+             delete from trener where zaposlenik =:zaposlenik;
+             delete from zaposlenik where sifra=:sifra;
+             commit;");
 $brisanjeZaposlenika->execute($_GET);
 header("location: zaposlenici.php");
 }

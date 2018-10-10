@@ -13,10 +13,6 @@
     <input value="<?php echo $o->oib ?>" autocomplete="off" type="text" id="oib" name="oib">
 </div>
 <div class="floated-label-wrapper">
-    <label for="email">email</label>
-    <input value="<?php echo $o->email ?>" autocomplete="off" type="text" id="email" name="email">
-</div>
-<div class="floated-label-wrapper">
     <label for="mob">mob</label>
     <input value="<?php echo $o->mob ?>" autocomplete="off" type="text" id="mob" name="mob">
 </div>

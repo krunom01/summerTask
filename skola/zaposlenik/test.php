@@ -35,7 +35,6 @@ if(!isset($_GET["sifra"]) && !isset($_POST["sifra"])){
         $updateZaposlenika=$veza->prepare("delete from trener where zaposlenik=:sifra");
         $updateZaposlenika->execute(array("sifra"=>$_POST["sifra"]));
         $veza->commit();
-        header("location: zaposlenici.php");
         }
     catch(PDOException $e)
     {
@@ -60,10 +59,7 @@ if(!isset($_GET["sifra"]) && !isset($_POST["sifra"])){
                 "radnomjesto"=>$_POST["radnomjesto"],
                 "sifra"=>$sifraOsobe
             ));
-            $updateZaposlenika=$veza->prepare("insert into trener (zaposlenik) values(:sifra)");
-            $updateZaposlenika->execute(array("sifra"=>$_POST["sifra"]));
             $veza->commit();
-            header("location: zaposlenici.php");
             }
         catch(PDOException $e)
         {

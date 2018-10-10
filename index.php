@@ -8,7 +8,6 @@
   <div class="grid-container">
   <?php include_once "predlozak/header.php"?>
   <?php include_once "predlozak/menu.php"?>
-   Dobro došli
   <?php include_once "predlozak/footer.php"?>
   </div>
   <?php include_once "predlozak/skripte.php"?>

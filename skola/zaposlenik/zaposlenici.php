@@ -8,13 +8,15 @@
 <div class="grid-container">
 <?php include_once "../../predlozak/header.php"?>
 <?php include_once "../../predlozak/menu.php"?>
+
+
 <!--Povezivanje s tablicom zaposlenik ako je korisnik prijavljen.
 Left join kako bi mogli obrisati i trenera koji je zaposlenik -->
    <?php
-    $zaposlenik=$veza->prepare("select c.naziv, a.sifra,b.zaposlenik, a.ime, a.prezime, a.oib, a.email, a.mob, a.radnomjesto, a.ziroracun
+    $zaposlenik=$veza->prepare("select a.sifra, b.zaposlenik, a.ime, a.prezime, a.oib,
+     a.mob, a.radnomjesto, a.image
     from zaposlenik a
-    left join trener b on b.zaposlenik=a.sifra
-    left join kategorija c on c.trener=b.sifra;");
+    left join trener b on b.zaposlenik=a.sifra;");
     $zaposlenik->execute();
     $zaposlenik=$zaposlenik->fetchall(PDO::FETCH_OBJ);
 
@@ -31,14 +33,12 @@ Left join kako bi mogli obrisati i trenera koji je zaposlenik -->
 
   <thead>
     <tr>
+        <th></th>
         <th>Ime</th>
         <th>Prezime</th>
-        <th>OIB</th>
-        <th>Email</th>
         <th>Mobitel</th>
         <th>Radno mjesto</th>
-        <th>Žiro račun</th>
-        <th>Izmjena/brisanje podataka</th>    
+        <th >Izmjena/brisanje</th>    
     </tr>
   </thead>
   <tbody>
@@ -47,14 +47,17 @@ Left join kako bi mogli obrisati i trenera koji je zaposlenik -->
     <?php foreach($zaposlenik as $kartica): ?>
     
     <tr>
+      <td>
+      <img src="<?php if($kartica->image!=null){ echo $kartica->image;}
+                      else{ echo "../../img/zaposlenici/nepoznato.png" ;} ?>"
+  
+       alt="<?php echo $kartica->prezime ?>" style="width=50px; height=50px;" ></td>
+
       <td data-label="Ime"><?php echo $kartica->ime ?></td>
-      <td data-label="Prezime"><?php echo $kartica->prezime ?></td>
-      <td data-label="OIB"><?php echo $kartica->oib ?></td>
-      <td data-label="Email"><?php echo $kartica->email ?></td>
+      <td data-label="Prezime" title="<?php echo "OIB: " . $kartica->oib; ?>"><?php echo $kartica->prezime; ?></td>
       <td data-label="Mobitel"><?php echo $kartica->mob ?></td>
       <td data-label="Radno mjesto"><?php echo $kartica->radnomjesto==="2" ?  "Trener" : "Uprava"; ?></td>
-      <td data-label="Žiro račun"><?php echo $kartica->ziroracun ?></td>
-      <td data-label="Izmjena/brisanje podataka">
+      <td data-label="Izmjena/brisanje" >
       <input type="hidden" name="radnomjesto" value="<?php echo $kartica->radnomjesto ?>">
       
       <a href="promjenaZaposlenika.php?sifra=<?php echo $kartica->sifra ?>" style="text-decorations:none; color:inherit;"><i class="far fa-edit fa-2x"></i></a>
@@ -74,6 +77,7 @@ Left join kako bi mogli obrisati i trenera koji je zaposlenik -->
     <?php endforeach; ?>
     </tbody>
     </table>
+   
 <!--ako korisnik nije prijavljen -->
 <?php else:?>
 <h3>Uprava</h3>

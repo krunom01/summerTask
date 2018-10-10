@@ -457,10 +457,11 @@ body {
   -moz-osx-font-smoothing: grayscale; }
 
 img {
-  display: inline-block;
+  display: block;
   vertical-align: middle;
-  max-width: 150px;;
-  height: 150px;
+  max-width: 60px;;
+  height: 60px;
+  margin: 0 auto;
   -ms-interpolation-mode: bicubic; }
 
 textarea {
@@ -2509,6 +2510,7 @@ ul.no-bullet, ol.no-bullet {
 
 .button {
   display: inline-block;
+  cursor: pointer;
   vertical-align: middle;
   margin: 0 0 1rem 0;
   font-family: inherit;
@@ -2858,7 +2860,7 @@ label > [type='radio'] {
   width: 100%; }
 
 label {
-  display: block;
+  
   margin: 0;
   font-size: 0.875rem;
   font-weight: normal;
@@ -3009,15 +3011,14 @@ select {
     color: #cc4b37; }
 
 .is-invalid-label {
-  color: #cc4b37; }
+  color: #DE1829; }
 
 .form-error {
   display: none;
   margin-top: -0.5rem;
-  margin-bottom: 1rem;
   font-size: 0.75rem;
   font-weight: bold;
-  color: #cc4b37; }
+  color: #DE1829; }
   .form-error.is-visible {
     display: block; }
 
