@@ -3,32 +3,38 @@
   <html class="no-js" lang="en" dir="ltr">
   <head>
 <?php include_once "../../predlozak/head.php"?>
+<link rel="stylesheet" href="<?php echo $putanja; ?>css/cropper.css">
+    <style>
+      .slika{
+        max-width: 4rem;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
 <div class="grid-container">
-<?php include_once "../../predlozak/header.php"?>
-<?php include_once "../../predlozak/menu.php"?>
+<?php include_once "../../predlozak/header.php";
+ include_once "../../predlozak/menu.php";
+
+ $uvjet="";
+ if(isset($_GET["uvjet"])){
+   $uvjet = $_GET["uvjet"];
+ }
+
+?>
+
+<div class="callout clearfix">
+<a class="button float-left" style="padding:0px; background-color: black;"  ><input type="text" id="uvjet" placeholder="traži člana..."></a>
+<a class="button float-left" id="trazi" href="#" ><i class="fas fa-search"></i></a>
+  <a class="button float-right" href="<?php echo $putanja; ?>skola/zaposlenik/noviZaposlenik.php">Dodaj novog zaposlenika</a>
+</div>
 
 
-<!--Povezivanje s tablicom zaposlenik ako je korisnik prijavljen.
-Left join kako bi mogli obrisati i trenera koji je zaposlenik -->
-   <?php
-    $zaposlenik=$veza->prepare("select a.sifra, b.zaposlenik, a.ime, a.prezime, a.oib,
-     a.mob, a.radnomjesto, a.image
-    from zaposlenik a
-    left join trener b on b.zaposlenik=a.sifra;");
-    $zaposlenik->execute();
-    $zaposlenik=$zaposlenik->fetchall(PDO::FETCH_OBJ);
+
+ 
 
 
-/* prikazivanje samo uprave ako korisnik nije prijavljen */
-    $zaposlenik1=$veza->prepare("select * from zaposlenik where radnomjesto=1;");
-    $zaposlenik1->execute();
-    $zaposlenik1=$zaposlenik1->fetchall(PDO::FETCH_OBJ);      
-    ?>
-<!--Ako je korisnik prijavljen-->
-<?php if(isset($_SESSION["bok"])): ?>
-<a class="button" href="<?php echo $putanja; ?>skola/zaposlenik/noviZaposlenik.php" style="width:100%; text-align: center; ">Dodaj novog zaposlenika </a>
+
 <table class="responsive-card-table unstriped">
 
   <thead>
@@ -38,65 +44,259 @@ Left join kako bi mogli obrisati i trenera koji je zaposlenik -->
         <th>Prezime</th>
         <th>Mobitel</th>
         <th>Radno mjesto</th>
-        <th >Izmjena/brisanje</th>    
+        <th>Izmjena/brisanje</th>
+          
     </tr>
   </thead>
-  <tbody>
+  <tbody id="podaci">
   
   
-    <?php foreach($zaposlenik as $kartica): ?>
-    
-    <tr>
-      <td>
-      <img src="<?php if($kartica->image!=null){ echo $kartica->image;}
-                      else{ echo "../../img/zaposlenici/nepoznato.png" ;} ?>"
-  
-       alt="<?php echo $kartica->prezime ?>" style="width=50px; height=50px;" ></td>
 
-      <td data-label="Ime"><?php echo $kartica->ime ?></td>
-      <td data-label="Prezime" title="<?php echo "OIB: " . $kartica->oib; ?>"><?php echo $kartica->prezime; ?></td>
-      <td data-label="Mobitel"><?php echo $kartica->mob ?></td>
-      <td data-label="Radno mjesto"><?php echo $kartica->radnomjesto==="2" ?  "Trener" : "Uprava"; ?></td>
-      <td data-label="Izmjena/brisanje" >
-      <input type="hidden" name="radnomjesto" value="<?php echo $kartica->radnomjesto ?>">
-      
-      <a href="promjenaZaposlenika.php?sifra=<?php echo $kartica->sifra ?>" style="text-decorations:none; color:inherit;"><i class="far fa-edit fa-2x"></i></a>
-              <a style="text-decorations:none; color:inherit;"
-              <?php if($kartica->radnomjesto==1):?>
-              onclick="return confirm('Želite li sigurno obrisati zaposlenika <?php echo $kartica->ime . " " . $kartica->prezime; ?>')"
-              href="obrisiZaposlenika.php?sifra=<?php echo $kartica->sifra ?>"
-              <?php else: ?>
-              onclick="return confirm('Želite li sigurno obrisati trenera i zaposlenika <?php echo $kartica->ime . " " . $kartica->prezime; ?>')"
-              href="obrisiZaposlenika.php?sifra=<?php echo $kartica->sifra."&zaposlenik=".$kartica->zaposlenik ?>"
-              <?php endif;?>
-              >
-      <i class="far fa-trash-alt fa-2x" style="color: rgba(201,12,15,.9);"></i></a>
-      
-      </td>
-    </tr>
-    <?php endforeach; ?>
     </tbody>
     </table>
+    <?php 
+
+?>
+    <nav aria-label="Pagination" class="text-center">
+  <ul class="pagination">
+  <li class="pagination-previous">
+  <a id="prethodni" href="#" aria-label="Next page">Prethodno <span class="show-for-sr">page</span></a></li>
+    <li class="current"><span class="show-for-sr">Trenutno na</span> <span id="trenutna"></span>/<span id="ukupno"></span></li>
    
-<!--ako korisnik nije prijavljen -->
-<?php else:?>
-<h3>Uprava</h3>
-<div class="grid-x grid-padding-x small-up-1 medium-up-3">
-  <?php foreach($zaposlenik1 as $kartica): ?>
-    <div class="cell">
-      <div class="card">
-        <img src="../<?php echo $kartica->image;?>">
-          <div class="card-section">
-            <h4><?php echo $kartica->ime." " . $kartica->prezime;?></h4>
-              <p><?php echo $kartica->radnomjesto ?></p>
-          </div>
-      </div>
-    </div>
-  <?php endforeach ?>    
-</div>
-<?php endif; ?>
+    <li class="pagination-next"><a href="#" id="sljedeci" aria-label="Next page">Sljedeće <span class="show-for-sr">page</span></a></li>
+  </ul>
+</nav>
+
 <?php include_once "../../predlozak/footer.php"?>
 </div>
+<div class="reveal small" id="odaberiSliku" data-reveal>
+    <img id="image" src="<?php echo $putanja; ?>img/zaposlenici/nepoznato.png" alt="Picture">
+    <input type="file" id="inputImage" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff">
+	  <a href="#" id="spremi">Spremi</a>
+<button class="close-button" data-close aria-label="Zatvori" type="button">
+   <span aria-hidden="true">&times;</span>
+ </button>
+</div>
 <?php include_once "../../predlozak/skripte.php"?>
+<script>
+
+var stranica=1;
+    $("#trenutna").html(stranica);
+
+     $("#prethodni").click(function(){
+      stranica--;
+      if(stranica==0){
+        stranica=1;
+       
+      }
+      dohvatiPodatke(stranica,$("#uvjet").val());
+       return false;
+     });
+
+      $("#sljedeci").click(function(){
+      stranica++;
+      if(stranica>parseInt($("#ukupno").html())){
+        stranica=parseInt($("#ukupno").html());
+        
+      }
+      dohvatiPodatke(stranica,$("#uvjet").val());
+       return false;
+     }
+     
+     );
+
+       $("#trazi").click(function(){
+      stranica=1;
+      dohvatiPodatke(stranica,$("#uvjet").val());
+      
+      return false;
+      
+    });
+    
+  
+    
+
+function dohvatiPodatke(stranica,uvjet){
+
+$.ajax({
+  type: "POST",
+  url: "trazi.php",
+  data: "stranica=" + stranica + "&uvjet=" + uvjet,
+  success: function(vratioServer){
+    var sve = JSON.parse(vratioServer)
+    $("#ukupno").html(sve.ukupnoStranica);
+    $("#trenutna").html(stranica);
+    var tbody = document.getElementById("podaci");
+    while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+   
+    $.each(sve.podaci,function(kljuc,p){
+      var tr = document.createElement("tr");
+
+var td = document.createElement("td");
+img = document.createElement("img");
+img.setAttribute("title","klikni za promjenu");
+img.setAttribute("class","slika");
+img.setAttribute("id","s_" + p.sifra);
+img.setAttribute("onerror","this.src='../../img/zaposlenici/nepoznato.png';");
+img.setAttribute("src","../../img/zaposlenici/" + p.sifra + ".png");
+img.setAttribute("alt", p.prezime );
+
+
+td.appendChild(img);
+tr.appendChild(td);
+
+var td = document.createElement("td");
+
+tr.appendChild(dodajCeliju(p.ime)).setAttribute("data-label", "Ime");
+tr.appendChild(dodajCeliju(p.prezime)).setAttribute("data-label", "Prezime");
+tr.appendChild(dodajCeliju(p.mob)).setAttribute("data-label", "Mobitel");
+tr.appendChild(dodajCeliju(p.radnomjesto)).setAttribute("data-label", "Radno mjesto");
+var td = document.createElement("td");
+var a = document.createElement("a");
+a.setAttribute("href","promjenaZaposlenika.php?sifra=" + p.sifra);
+var i = document.createElement("i");
+i.setAttribute("class","fas fa-edit fa-2x");
+a.appendChild(i);
+td.appendChild(a);
+
+a = document.createElement("a");
+a.setAttribute("onclick","return confirm('Sigurno obrisati " + p.ime + " " + p.prezime + "')");
+a.setAttribute("href","obrisiZaposlenika.php?sifra=" + p.sifra);
+i = document.createElement("i");
+i.setAttribute("class","far fa-trash-alt fa-2x");
+i.setAttribute("style","color: #DE1829;");
+a.appendChild(i);
+td.appendChild(a);
+tr.appendChild(td);
+
+
+
+tbody.appendChild(tr);
+        
+     
+        
+    });
+  }
+
+  
+});
+
+}
+
+
+dohvatiPodatke(stranica,"");
+
+
+
+function dodajCeliju(tekst){
+  var td= document.createElement("td");
+  var tekst = document.createTextNode(tekst==null ? "" : tekst);
+  td.appendChild(tekst);
+  return td;
+}
+
+$(function () {
+  'use strict';
+
+var slika;
+  $(".slika").click(function(){
+    slika=$(this);
+    $('#odaberiSliku').foundation("open");
+
+    return false;
+  });
+
+    
+    $("#spremi").click(function(){
+
+      var opcije = { "width": 200, "height": 200 };
+      var result = $image.cropper("getCroppedCanvas", opcije, opcije);
+      
+      $.ajax({
+          type: "POST",
+          url: "spremiSliku.php",
+          data: "sifra=" + slika.attr("id").split("_")[1] + "&slika="+result.toDataURL(),
+          success: function(vratioServer){
+            //console.log(vratioServer);
+            if (vratioServer==="OK"){
+              slika.attr("src",result.toDataURL());
+              $('#odaberiSliku').foundation("close");
+            }
+            
+          }
+        });
+      
+
+      return false;
+    });
+
+  var console = window.console || { log: function () {} };
+  var URL = window.URL || window.webkitURL;
+  var $image = $('#image');
+  var options = {
+    aspectRatio: 1 / 1
+  };
+
+var originalImageURL = $image.attr('src');
+  var uploadedImageName = 'cropped.jpg';
+  var uploadedImageType = 'image/jpeg';
+  var uploadedImageURL;
+
+
+  // Cropper
+  $image.on({
+    
+  }).cropper(options);
+
+  
+  // Import image
+  var $inputImage = $('#inputImage');
+
+  if (URL) {
+    $inputImage.change(function () {
+      var files = this.files;
+      var file;
+
+      if (!$image.data('cropper')) {
+        return;
+      }
+
+      if (files && files.length) {
+        file = files[0];
+
+        if (/^image\/\w+$/.test(file.type)) {
+          uploadedImageName = file.name;
+          uploadedImageType = file.type;
+
+          if (uploadedImageURL) {
+            URL.revokeObjectURL(uploadedImageURL);
+          }
+
+          uploadedImageURL = URL.createObjectURL(file);
+          $image.cropper('destroy').attr('src', uploadedImageURL).cropper(options);
+          $inputImage.val('');
+        } else {
+          window.alert('Please choose an image file.');
+        }
+      }
+    });
+  } else {
+    $inputImage.prop('disabled', true).parent().addClass('disabled');
+  }
+  
+
+  
+});
+
+
+</script>
+
+<script src="https://fengyuanchen.github.io/js/common.js"></script>
+  <script src="<?php echo $putanja; ?>cropper/js/cropper.js"></script>
 </body>
 </html>
+
+
+ 

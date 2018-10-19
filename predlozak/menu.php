@@ -20,8 +20,10 @@
                     <li><a href="<?php echo $putanja;?>skola/clanovi/clanovi.php">Članovi</a></li>
                     <?php else:?>
                     <li><a href="<?php echo $putanja;?>skola/zaposlenik/zaposlenici.php">Uprava</a></li>
-                    <li><a href="<?php echo $putanja;?>skola/zaposlenik/treneri.php">Treneri</a></li>                   
+                    <li><a href="<?php echo $putanja;?>skola/zaposlenik/treneri.php">Treneri</a></li>
+                                    
                     <?php endif;?>
+                    <li><a href="<?php echo $putanja;?>skola/aktivnosti/trening.php">Aktivnosti</a></li>    
                     
                   </ul>
                 </li>

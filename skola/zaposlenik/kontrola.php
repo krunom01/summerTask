@@ -29,16 +29,4 @@ $errors = array();
     {
     $errors["ziroracun"] = "unesi žiroračun"; 
     }
-    if(!empty($_FILES["image"]["name"])){
-    $dozvoljeno = array("jpg","png");
-    $slika = explode('.' , $_FILES["image"]["name"]);
-    $slika1=end($slika);
-    if(in_array($slika1, $dozvoljeno)){
-        $ime =  $_POST["prezime"] . '.' . $slika1;
-        $put = "../../img/zaposlenici/" . $ime;   
-    }
-    else {
-        $errors["image"] = "Dozvoljeni tip slike: JPG ili PNG!"; 
-    }
-    }
 ?>

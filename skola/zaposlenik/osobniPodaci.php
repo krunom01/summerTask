@@ -1,4 +1,4 @@
-<form style="margin-top: 3rem;"  action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data">
+<form style="margin-top: 3rem;"  action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
 
 <div class="grid-x grid-padding-x">
     <div class="large-1 medium-2 cell">
@@ -140,23 +140,7 @@
 
 <div class="grid-x grid-padding-x">
     <div class="large-8 medium-4 cell">
-    <?php if(!isset($errors["image"])):?>
-    <label>Slika</label></br>
-    <input id="image" type="file" name="image" >
-   <button id="image_alt">Select image</button>
-   
-    <?php else:?>
-    <label class="is-invalid-label">
-              Slika
-              <input type="file" 
-              class="is-invalid-input" aria-describedby="nazivGreska" data-invalid="" 
-              aria-invalid="true" autocomplete="off" type="text" id="image" name="image" >
-              <span class="form-error is-visible" id="nazivGreska">
-              <?php echo $errors["image"]; ?>
-              </span>
-              </label>
-
-<?php endif;?>
+    
     </div> 
 
 

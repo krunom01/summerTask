@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Cropper</title>
+
+  <link rel="stylesheet" href="css/cropper.css">
+</head>
+<body>
+
+
+
+ 
+
+  <!-- Content -->
+  <div class="container">
+  
+    <div class="row">
+      <div class="col-md-9">
+        <!-- <h3>Demo:</h3> -->
+        <div class="img-container">
+          <img id="image" src="images/picture.jpg" alt="Picture">
+        </div>
+      </div>
+	  <input type="file" class="sr-only" id="inputImage" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff">
+	  <a href="#" id="spremi">Spremi</a>
+      
+    </div>
+    
+  </div>
+
+
+ 
+
+  
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://fengyuanchen.github.io/js/common.js"></script>
+  <script src="js/cropper.js"></script>
+  <script>
+	$(function () {
+  'use strict';
+
+  var console = window.console || { log: function () {} };
+  var URL = window.URL || window.webkitURL;
+  var $image = $('#image');
+  var options = {
+    aspectRatio: 1 / 1
+  };
+
+var originalImageURL = $image.attr('src');
+  var uploadedImageName = 'cropped.jpg';
+  var uploadedImageType = 'image/jpeg';
+  var uploadedImageURL;
+
+
+  // Cropper
+  $image.on({
+    
+  }).cropper(options);
+
+  
+  // Import image
+  var $inputImage = $('#inputImage');
+
+  if (URL) {
+    $inputImage.change(function () {
+      var files = this.files;
+      var file;
+
+      if (!$image.data('cropper')) {
+        return;
+      }
+
+      if (files && files.length) {
+        file = files[0];
+
+        if (/^image\/\w+$/.test(file.type)) {
+          uploadedImageName = file.name;
+          uploadedImageType = file.type;
+
+          if (uploadedImageURL) {
+            URL.revokeObjectURL(uploadedImageURL);
+          }
+
+          uploadedImageURL = URL.createObjectURL(file);
+          $image.cropper('destroy').attr('src', uploadedImageURL).cropper(options);
+          $inputImage.val('');
+        } else {
+          window.alert('Please choose an image file.');
+        }
+      }
+    });
+  } else {
+    $inputImage.prop('disabled', true).parent().addClass('disabled');
+  }
+  
+  
+  $("#spremi").click(function(){
+
+    var opcije = { "width": 200, "height": 200 };
+    var result = $image.cropper("getCroppedCanvas", opcije, opcije);
+    console.log(result.toDataURL());
+		
+		return false;
+	});
+  
+});
+
+  </script>
+</body>
+</html>

@@ -22,20 +22,26 @@ if(!isset($_GET["sifra"]) && !isset($_POST["sifra"])){
         $sifraOsobe=$updateZaposlenika->fetchColumn();
         $mob = $_POST["mob1"] . $_POST["mob"];
         $updateZaposlenika=$veza->prepare(
-            "update zaposlenik set ime=:ime, prezime=:prezime, oib=:oib, mob=:mob, ziroracun=:ziroracun, radnomjesto=:radnomjesto  where sifra=:sifra;");
-        $updateZaposlenika->execute(array(
-            "ime"=>$_POST["ime"],
-            "prezime"=>$_POST["prezime"],
-            "oib"=>$_POST["oib"],
-            "mob"=>$mob,
-            "ziroracun"=>$_POST["ziroracun"],
-            "radnomjesto"=>$_POST["radnomjesto"],
-            "sifra"=>$sifraOsobe
-        ));
-        $updateZaposlenika=$veza->prepare("delete from trener where zaposlenik=:sifra");
+            "update zaposlenik set ime=:ime, prezime=:prezime, oib=:oib, mob=:mob, ziroracun=:ziroracun, radnomjesto=:radnomjesto where sifra=:sifra;");
+            $updateZaposlenika->bindParam(":sifra", $sifraOsobe);
+            $updateZaposlenika->bindParam(":ime", $_POST["ime"]);
+            $updateZaposlenika->bindParam(":prezime", $_POST["prezime"]);
+            if($_POST["oib"]===""){
+              $updateZaposlenika->bindValue(":oib",null,PDO::PARAM_STR);
+            }
+            else{
+              $updateZaposlenika->bindParam(":oib", $_POST["oib"]);
+            }
+            $updateZaposlenika->bindParam(":mob", $mob, PDO::PARAM_STR);
+            $updateZaposlenika->bindParam(":radnomjesto", $_POST["radnomjesto"]);
+            $updateZaposlenika->bindParam(":ziroracun", $_POST["ziroracun"]);
+            $updateZaposlenika->execute();  
+            $updateZaposlenika=$veza->prepare("delete from trener where zaposlenik=:sifra");
         $updateZaposlenika->execute(array("sifra"=>$_POST["sifra"]));
         $veza->commit();
         header("location: zaposlenici.php");
+        
+        
         }
     catch(PDOException $e)
     {
@@ -60,10 +66,14 @@ if(!isset($_GET["sifra"]) && !isset($_POST["sifra"])){
                 "radnomjesto"=>$_POST["radnomjesto"],
                 "sifra"=>$sifraOsobe
             ));
+            
+           
             $updateZaposlenika=$veza->prepare("insert into trener (zaposlenik) values(:sifra)");
             $updateZaposlenika->execute(array("sifra"=>$_POST["sifra"]));
+           
             $veza->commit();
             header("location: zaposlenici.php");
+            
             }
         catch(PDOException $e)
         {
@@ -89,7 +99,7 @@ $o=$promjenaZaposlenika->fetch(PDO::FETCH_OBJ);
   <div class="grid-container">
 <?php include_once "../../predlozak/header.php"?>
 <?php include_once "../../predlozak/menu.php"?>
-<form style="margin-top: 3rem;"  action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
+<form style="margin-top: 3rem;"  action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data">
 
 <div class="grid-x grid-padding-x">
     <div class="large-1 medium-2 cell">
@@ -256,7 +266,8 @@ $o=$promjenaZaposlenika->fetch(PDO::FETCH_OBJ);
 </div>
 <div class="grid-x grid-padding-x">
 <div class="large-4 medium-4 cell">
-    
+
+
     </div> 
     <div class="large-4 medium-4 cell">
     <input type="hidden" name="sifra" value="<?php echo isset($_POST["sifra"])? $_POST["sifra"] : $o->sifra; ?>">

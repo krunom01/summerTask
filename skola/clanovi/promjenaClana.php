@@ -12,7 +12,7 @@ if(!isset($_SESSION["bok"])){
 }
 
 if(isset($_POST["dodaj"])){
-  print_r($_POST);
+  
   $mob = $_POST["mob1"] . $_POST["mob"];
 
   $promjenaClana=$veza->prepare("update clan set 
@@ -44,7 +44,7 @@ if(isset($_POST["dodaj"])){
   $promjenaClana->bindParam(":prezimeroditelja", $_POST["prezimeroditelja"]);
   $promjenaClana->bindParam(":kategorija", $_POST["kategorija"]);
   $promjenaClana->execute();
-  
+  header ("location:clanovi.php");
 
  
 
