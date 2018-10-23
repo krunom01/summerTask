@@ -18,7 +18,7 @@ $errors["prezime"] = "Krivo upisano prezime";
 }
 if (empty($_POST["oib"]) or strlen($_POST["oib"]) !== 11 or !is_numeric($_POST["oib"]))
 {
-$errors["oib"] = "Krivo upisan oib"; 
+$errors["oib"] = "Krivo upisan oib(upisite 11 brojeva)"; 
 }
 
 $datum = $_POST["datumrodenja"];
@@ -33,7 +33,7 @@ $errors["datumrodenja"] = "krivo unesen datum (osoba ne smije biti mlađa od 4 g
 }
 
 
-if (empty($_POST["mob"]) or !is_numeric($_POST["mob"]))
+if (empty($_POST["mob"]) or !is_numeric($_POST["mob"]) or strlen($_POST["mob"]) > 7 or strlen($_POST["mob"]) < 6 or $_POST["mob"] < 0)
 {
 $errors["mob"] = "unesi broj mobitela"; 
 }

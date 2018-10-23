@@ -12,6 +12,8 @@ if(!isset($_SESSION["bok"])){
 }
 
 if(isset($_POST["dodaj"])){
+  include_once "kontrola.php";
+  if(count($errors)==0){
   
   $mob = $_POST["mob1"] . $_POST["mob"];
 
@@ -39,7 +41,7 @@ if(isset($_POST["dodaj"])){
   else{
     $promjenaClana->bindParam(":datumrodenja", $_POST["datumrodenja"]);
   }
-  $promjenaClana->bindParam(":mob", $mob, PDO::PARAM_INT);
+  $promjenaClana->bindParam(":mob", $mob, PDO::PARAM_STR);
   $promjenaClana->bindParam(":imeroditelja", $_POST["imeroditelja"]);
   $promjenaClana->bindParam(":prezimeroditelja", $_POST["prezimeroditelja"]);
   $promjenaClana->bindParam(":kategorija", $_POST["kategorija"]);
@@ -47,7 +49,7 @@ if(isset($_POST["dodaj"])){
   header ("location:clanovi.php");
 
  
-
+  }
 } 
 else {
 $promjenaClan = $veza->prepare("select a.sifra, a.ime, a.prezime, a.oib, a.datumrodenja, a.mob, a.imeroditelja, a.prezimeroditelja,
@@ -64,7 +66,7 @@ $o=$promjenaClan->fetch(PDO::FETCH_OBJ);
   <?php include_once "../../predlozak/menu.php"?>
   
    
-  <form style="margin-top: 3rem;"  action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
+  <form style="margin-top: 3rem;"  action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data">
 
 <div class="grid-x grid-padding-x">
     <div class="large-1 medium-2 cell">
@@ -75,7 +77,7 @@ $o=$promjenaClan->fetch(PDO::FETCH_OBJ);
   <?php if(!isset($errors["ime"])): ?>
     <div class="large-4 cell">
       <label>Ime</label>
-      <input type="text" name="ime" value="<?php echo isset($_POST["ime"])? $_POST["ime"] :  $o->ime ?>">
+      <input type="text" name="ime" value="<?php echo isset($_POST["ime"])? $_POST["ime"] : $o->ime ?>">
     </div>
 <?php else: ?>
     <div class="large-4 cell">
@@ -95,7 +97,7 @@ $o=$promjenaClan->fetch(PDO::FETCH_OBJ);
 <?php if(!isset($errors["prezime"])): ?>
     <div class="large-4 cell">
       <label>Prezime</label>
-      <input type="text" name="prezime" value="<?php echo isset($_POST["prezime"])? $_POST["prezime"] :  $o->prezime ?>">
+      <input type="text" name="prezime" value="<?php echo isset($_POST["prezime"])? $_POST["prezime"] : $o->prezime ?>">
     </div>
 <?php else: ?>
     <div class="large-4 cell">
@@ -115,7 +117,7 @@ $o=$promjenaClan->fetch(PDO::FETCH_OBJ);
 <?php if(!isset($errors["oib"])): ?>
     <div class="large-4 cell">
       <label>OIB</label>
-      <input type="text" name="oib" value="<?php echo isset($_POST["oib"])? $_POST["oib"] :  $o->oib ?>">
+      <input type="text" name="oib" value="<?php echo isset($_POST["oib"])? $_POST["oib"] : $o->oib ?>">
     </div>
 <?php else: ?>
     <div class="large-4 cell">
@@ -138,30 +140,31 @@ $o=$promjenaClan->fetch(PDO::FETCH_OBJ);
   <div class="grid-x grid-padding-x">
   <?php if(!isset($errors["datumrodenja"])): ?>
     <div class="large-4 cell">
-    <div class="floated-label-wrapper">
-            <label <?php if(isset($greske["datumrodenja"])){
-              echo ' class="is-invalid-label" ';
-            } ?> for="datumrođenja">Datum rođenja</label>
-            <input 
-            <?php if(isset($greske["datumrodenja"])){
-              echo ' class="is-invalid-input" data-invalid="" aria-invalid="true" ';
-            } ?>
-            value="<?php echo isset($_POST["datumrodenja"]) ? $_POST["datumrodenja"] :  $o->datumrodenja ?>"
-             autocomplete="off" type="date"  id="datumrodenja" name="datumrodenja" >
-             <?php if(isset($greske["datumrodenja"])): ?>
-            <span class="form-error is-visible" id="nazivGreska">
-              <?php echo $greske["datumrodenja"]; ?>
+      <label>Datum rođenja</label>
+      <input type="date" name="datumrodenja" value="<?php echo isset($_POST["datumrodenja"])? $_POST["datumrodenja"] : $o->datumrodenja ?>">
+    </div>
+<?php else: ?>
+    <div class="large-4 cell">
+    <label class="is-invalid-label">
+    Datum rođenja
+              <input type="date" 
+              value="<?php echo  $_POST["datumrodenja"]; ?>"
+              class="is-invalid-input" aria-describedby="nazivGreska" data-invalid="" 
+              aria-invalid="true" autocomplete="off" type="text" id="datumrodenja" name="datumrodenja" >
+              <span class="form-error is-visible" id="nazivGreska">
+              <?php echo $errors["datumrodenja"];  ?>
               </span>
               </label>
-          <?php endif;?>
-          </div>
     </div>
     
 <?php endif; ?>
-<?php if(!isset($errors["prezime"])): ?>
+  
+    
+
+<?php if(!isset($errors["imeroditelja"])): ?>
     <div class="large-4 cell">
       <label>Ime roditelja</label>
-      <input type="text" name="imeroditelja" value="<?php echo isset($_POST["imeroditelja"])? $_POST["imeroditelja"] :  $o->imeroditelja ?>">
+      <input type="text" name="imeroditelja" value="<?php echo isset($_POST["imeroditelja"])? $_POST["imeroditelja"] : $o->imeroditelja ?>">
     </div>
 <?php else: ?>
     <div class="large-4 cell">
@@ -178,10 +181,10 @@ $o=$promjenaClan->fetch(PDO::FETCH_OBJ);
     </div>
     
 <?php endif; ?>
-<?php if(!isset($errors["prezime"])): ?>
+<?php if(!isset($errors["prezimeroditelja"])): ?>
     <div class="large-4 cell">
       <label>Prezime roditelja</label>
-      <input type="text" name="prezimeroditelja" value="<?php echo isset($_POST["prezimeroditelja"])? $_POST["prezimeroditelja"] :  $o->prezimeroditelja ?>">
+      <input type="text" name="prezimeroditelja" value="<?php echo isset($_POST["prezimeroditelja"])? $_POST["prezimeroditelja"] : $o->prezimeroditelja ?>">
     </div>
 <?php else: ?>
     <div class="large-4 cell">
@@ -200,13 +203,53 @@ $o=$promjenaClan->fetch(PDO::FETCH_OBJ);
 <?php endif; ?>
 </div>
 
-  <div class="grid-x grid-padding-x">
-  
-  <?php if(!isset($errors["prezime"])): ?>
-        <div class="large-4 medium-4 cell">
-        
-        <label for="Kategorija">Kategorija</label>
-            <select id="kategorija" name="kategorija">
+ <div class="grid-x grid-padding-x">
+  <div class="large-1 small-3 cell">
+    <label>Mobitel</label>
+    <select id="mob1" name="mob1" >
+    <?php
+     $brojMob = $o->mob;
+     $prviDio= substr($brojMob,0,3);
+     $drugiDio= substr($brojMob,3);
+             $pocetniBroj = array("091","092","095","097","098","099"); ?>
+             <?php foreach($pocetniBroj as $broj): ?>
+             <option <?php if(isset($_POST["mob1"])){ echo $broj===$_POST["mob1"]? ' selected="selected" ':""; }
+             else {
+                 if ($prviDio===$broj){
+                     echo ' selected="selected" ';
+                 }
+             }
+             ?>  value="<?php echo $broj?>"><?php echo $broj;?></option>
+             <?php endforeach;?>
+              </select>         
+              
+    </div>
+  <?php if(!isset($errors["mob"])): ?>
+ 
+    <div class="large-3 small-9 cell">
+      <input style="margin-top:25px;" type="number" name="mob" value="<?php echo isset($_POST["mob"])? $_POST["mob"] : $drugiDio; ?>">
+    </div>
+<?php else: ?>
+<div class="large-3 small-9 cell">
+    <label class="is-invalid-label">
+    Mobitel
+              <input type="text" 
+              value="<?php echo  $_POST["mob"]; ?>"
+              class="is-invalid-input" aria-describedby="nazivGreska" data-invalid="" 
+              aria-invalid="true" autocomplete="off" maxlength="7" type="text" id="mob" name="mob" >
+              <span class="form-error is-visible" id="nazivGreska">
+              <?php echo $errors["mob"]; ?>
+              </span>
+              </label>
+    </div>
+<?php endif; ?>
+
+    <div class="large-4 cell">
+    <label
+    <?php if(isset($errors["kategorija"])){
+              echo ' class="is-invalid-label" ';}?>
+     for="Kategorija">Kategorija</label>
+     <select id="kategorija" name="kategorija">
               <option value="0">Odaberi kategoriju</option>  
               <?php 
               
@@ -230,57 +273,23 @@ $o=$promjenaClan->fetch(PDO::FETCH_OBJ);
              
             <?php endforeach;?>
             </select>
-   
-    
-<?php endif; ?>
-    
-
-        
-        </div>
-        
-        <div class="large-1 small-3 cell">
-    <label>Mobitel</label>
-    <select id="mob1" name="mob1" >
-    <?php
-     $brojMob = $o->mob;
-     $prviDio= substr($brojMob,0,3);
-     $drugiDio= substr($brojMob,3);
-             $pocetniBroj = array("091","092","095","097","098","099"); ?>
-             <?php foreach($pocetniBroj as $broj): ?>
-             <option <?php if(isset($_POST["mob1"])){ echo $broj===$_POST["mob1"]? ' selected="selected" ':""; }
-             else {
-                 if ($prviDio===$broj){
-                     echo ' selected="selected" ';
-                 }
-             }
-             ?>  value="<?php echo $broj?>"><?php echo $broj;?></option>
-             <?php endforeach;?>
-              </select>         
-              
-    </div>
-    <?php if(!isset($errors["mob"])): ?>
-    <div class="large-3 small-9 cell">
-      <input style="margin-top:25px;" type="number" name="mob" value="<?php echo isset($_POST["mob"])? $_POST["mob"] : $drugiDio; ?>">
-    </div>
-<?php else: ?>
-<div class="large-3 small-9 cell">
-    <label class="is-invalid-label">
-    Mobitel
-              <input type="text" 
-              value="<?php echo $drugiDio;?>"
-              class="is-invalid-input" aria-describedby="nazivGreska" data-invalid="" 
-              aria-invalid="true" autocomplete="off" maxlength="7" type="text" id="mob" name="mob" >
-              <span class="form-error is-visible" id="nazivGreska">
-              <?php echo $errors["mob"]; ?>
+            <?php if(isset($errors["kategorija"])): ?>
+            <span class="form-error is-visible" id="nazivGreska">
+              <?php echo $errors["kategorija"]; ?>
               </span>
               </label>
+          <?php endif;?>
     </div>
-<?php endif; ?>
-        <div class="large-4 medium-4 cell">
-        <input type="hidden" name="sifra" value="<?php echo isset($_POST["sifra"])? $_POST["sifra"] : $o->sifra; ?>">
+            
+    
+
+    
+    <input type="hidden" name="sifra" value="<?php echo isset($_POST["sifra"])? $_POST["sifra"] : $o->sifra; ?>">
+<div class="large-4 medium-4 cell">
           <input style="margin-top:24px;"  class="button expanded" type="submit" name="dodaj" value="Dodaj novog člana">
         </div> 
-</div>
+</div> 
+
 </form>
 <?php include_once "../../predlozak/footer.php"?>
 <?php include_once "../../predlozak/skripte.php"?>

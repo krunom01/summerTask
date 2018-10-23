@@ -1,75 +1,184 @@
-<?php include_once "../../konfiguracija.php" ?>
+<?php include_once "../../konfiguracija.php" ;
+
+$stranica=1;
+if(isset($_GET["stranica"])){
+  $stranica=$_GET["stranica"];
+}
+
+
+$uvjet="";
+if(isset($_GET["uvjet"])){
+  $uvjet=$_GET["uvjet"];
+}
+
+$izraz = $veza->prepare("
+ 
+ select count(sifra) from zaposlenik where concat(ime, ' ', prezime) like :uvjet ;
+ ");
+ $izraz->execute(array("uvjet"=>"%" . $uvjet . "%"));
+ $ukupnoPolaznika = $izraz->fetchColumn();
+$ukupnoStranica=ceil($ukupnoPolaznika/10);
+if($stranica>$ukupnoStranica){
+  $stranica=$ukupnoStranica;
+}
+if($stranica==0){
+  $stranica=1;
+}
+
+?>
 <!doctype html>
-  <html class="no-js" lang="en" dir="ltr">
+<html class="no-js" lang="en" dir="ltr">
   <head>
-<?php include_once "../../predlozak/head.php"?>
-<link rel="stylesheet" href="<?php echo $putanja; ?>css/cropper.css">
+    <?php include_once "../../predlozak/head.php" ?>
+    <link rel="stylesheet" href="<?php echo $putanja; ?>cropper/css/cropper.css">
     <style>
       .slika{
         max-width: 4rem;
         cursor: pointer;
       }
+
+      .cropper-container, .cropper-bg{
+        width: 300px !important;
+        height: 300px !important;
+      }
     </style>
   </head>
   <body>
-<div class="grid-container">
-<?php include_once "../../predlozak/header.php";
- include_once "../../predlozak/menu.php";
+  <?php
+ $izraz = $veza->prepare("
+ 
+ select a.sifra,b.zaposlenik, a.ime, a.prezime, a.oib, a.mob, a.radnomjesto, a.ziroracun
+    from zaposlenik a
+    left join trener b on b.zaposlenik=a.sifra
+  where concat(a.ime, ' ',a.prezime) like :uvjet  
+  order by a.ime,a.prezime limit :stranica, 10 
+ ");
 
- $uvjet="";
- if(isset($_GET["uvjet"])){
-   $uvjet = $_GET["uvjet"];
- }
+ $izraz->bindValue("stranica",($stranica*10) - 10,PDO::PARAM_INT);
+ $izraz->bindValue("uvjet","%" . $uvjet . "%");
+ $izraz->execute();
+ $rezultati = $izraz->fetchAll(PDO::FETCH_OBJ);
 
-?>
+ ?>
+    <div class="grid-container">
+      
+    <?php include_once "../../predlozak/header.php";?>
 
-<div class="callout clearfix">
-<a class="button float-left" style="padding:0px; background-color: black;"  ><input type="text" id="uvjet" placeholder="traži člana..."></a>
-<a class="button float-left" id="trazi" href="#" ><i class="fas fa-search"></i></a>
+    <?php include_once "../../predlozak/menu.php" ?>
+<?php if(isset($_SESSION["bok"])): ?>
+  <div class="callout clearfix">
+<form action="<?php echo $_SERVER["PHP_SELF"] ?>">
+<a class="button float-left" style="padding:0px; background-color: black;"  > <input type="text" name="uvjet" value="<?php echo $uvjet ?>"></a>
+<input type="submit" value="Traži" class="button float-left"/>
+</form>
   <a class="button float-right" href="<?php echo $putanja; ?>skola/zaposlenik/noviZaposlenik.php">Dodaj novog zaposlenika</a>
 </div>
 
-
-
  
-
-
-
-<table class="responsive-card-table unstriped">
-
-  <thead>
+  <table class="responsive-card-table unstriped">
+    <thead>
     <tr>
-        <th></th>
-        <th>Ime</th>
-        <th>Prezime</th>
-        <th>Mobitel</th>
-        <th>Radno mjesto</th>
-        <th>Izmjena/brisanje</th>
-          
-    </tr>
-  </thead>
-  <tbody id="podaci">
-  
-  
+    <th></th>
+    <th>Ime</th>
+    <th>Prezime</th>
+    <td >Mobitel</td>
+    <th>Radno mjesto</th>
+    <th>Izmjena podataka</th>
+   
 
+    
+    
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach($rezultati as $red):?>
+      <tr>
+      <td>
+      <img title="Klik na sliku za promjenu" class="slika" id="s_<?php echo $red->sifra;?>" src="<?php 
+         if(file_exists("../../img/zaposlenici/" . $red->sifra . ".png")){
+          echo $putanja . "img/zaposlenici/" . $red->sifra . ".png";
+          }else{
+            echo $putanja . "img/zaposlenici/nepoznato.png";
+          }
+          
+          ?>" alt="<?php echo $red->ime . " " . $red->prezime ?>" />
+
+      </td>
+      <td data-label="Ime"><?php echo $red->ime; ?></td>
+      <td data-label="Prezime" title="<?php echo "OIB: " . $red->oib; ?>"><?php echo $red->prezime; ?></td>
+      <td data-label="Mobitel" ><?php echo $red->mob; ?></td>
+      <td data-label="Radno mjesto"><?php if($red->radnomjesto==1){echo "Uprava";}else{echo "Trener";} ?></td>
+      
+      <td data-label="Izmjena podataka">
+      <input type="hidden" name="radnomjesto" value="<?php echo $kartica->radnomjesto ?>">
+      
+      <a href="promjenaZaposlenika.php?sifra=<?php echo $red->sifra ?>" style="text-decorations:none; color:inherit;"><i class="far fa-edit fa-2x"></i></a>
+              <a style="text-decorations:none; color:inherit;"
+              <?php if($red->radnomjesto==1):?>
+              onclick="return confirm('Želite li sigurno obrisati zaposlenika <?php echo $red->ime . " " . $red->prezime; ?>')"
+              href="obrisiZaposlenika.php?sifra=<?php echo $red->sifra ?>"
+              <?php else: ?>
+              onclick="return confirm('Želite li sigurno obrisati trenera i zaposlenika <?php echo $red->ime . " " . $red->prezime; ?>')"
+              href="obrisiZaposlenika.php?sifra=<?php echo $red->sifra."&zaposlenik=".$red->zaposlenik ?>"
+              <?php endif;?>
+              >
+      <i class="far fa-trash-alt fa-2x" style="color: rgba(201,12,15,.9);"></i></a>
+      
+      </td>
+      </tr>
+    <?php endforeach;?>
     </tbody>
     </table>
-    <?php 
-
+  
+<?php 
+if($ukupnoStranica==0){
+  $ukupnoStranica=1;
+}
 ?>
-    <nav aria-label="Pagination" class="text-center">
+ <nav aria-label="Pagination" class="text-center">
   <ul class="pagination">
   <li class="pagination-previous">
-  <a id="prethodni" href="#" aria-label="Next page">Prethodno <span class="show-for-sr">page</span></a></li>
-    <li class="current"><span class="show-for-sr">Trenutno na</span> <span id="trenutna"></span>/<span id="ukupno"></span></li>
+  <a href="zaposlenici.php?stranica=<?php echo $stranica-1; ?>&uvjet=<?php echo $uvjet ?>" aria-label="Next page">Prethodno <span class="show-for-sr">page</span></a></li>
+    <li class="current"><span class="show-for-sr">Trenutno na</span> <?php echo $stranica; ?>/<?php echo $ukupnoStranica; ?></li>
    
-    <li class="pagination-next"><a href="#" id="sljedeci" aria-label="Next page">Sljedeće <span class="show-for-sr">page</span></a></li>
+    <li class="pagination-next"><a href="zaposlenici.php?stranica=<?php echo $stranica+1; ?>&uvjet=<?php echo $uvjet ?>" aria-label="Next page">Sljedeće <span class="show-for-sr">page</span></a></li>
   </ul>
 </nav>
+<?php else: ?>
+<h3>Uprava</h3>
+<div class="grid-x grid-padding-x small-up-1 medium-up-3">
+  <?php foreach($rezultati as $red): ?>
+  <?php if($red->radnomjesto==1): ?>
 
-<?php include_once "../../predlozak/footer.php"?>
+    <div class="cell">
+      <div class="card">
+      <img title="Klik na sliku za promjenu" class="slika" style=" max-width: 10rem !important;" id="s_<?php echo $red->sifra;?>" src="<?php 
+         if(file_exists("../../img/zaposlenici/" . $red->sifra . ".png")){
+          echo $putanja . "img/zaposlenici/" . $red->sifra . ".png";
+          }else{
+            echo $putanja . "img/zaposlenici/nepoznato.png";
+          }
+          
+          ?>" alt="<?php echo $red->ime . " " . $red->prezime ?>" />
+          <div class="card-section">
+            <h4><?php echo $red->ime." " . $red->prezime;?></h4>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sit amet lorem condimentum, tincidunt dui eu, volutpat erat. Duis ultricies pretium sapien. Ut malesuada velit augue, id sodales nisl ultrices nec. Duis nulla quam, hendrerit eget ligula vestibulum, congue fermentum est. Sed tempor
+               congue purus vitae luctus. Vivamus at leo ut ligula euismod tempus. Vestibulum nec sodales diam, vel placerat sem.</p>
+          </div>
+      </div>
+    </div>
+    
+        <?php endif; ?>  
+  <?php endforeach ;?>    
 </div>
-<div class="reveal small" id="odaberiSliku" data-reveal>
+
+
+<?php endif; ?>
+    <?php include_once "../../predlozak/footer.php" ?>
+
+<?php if(isset($_SESSION["bok"])): ?>
+ <div class="reveal small" id="odaberiSliku" data-reveal>
+
     <img id="image" src="<?php echo $putanja; ?>img/zaposlenici/nepoznato.png" alt="Picture">
     <input type="file" id="inputImage" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff">
 	  <a href="#" id="spremi">Spremi</a>
@@ -77,127 +186,15 @@
    <span aria-hidden="true">&times;</span>
  </button>
 </div>
-<?php include_once "../../predlozak/skripte.php"?>
-<script>
-
-var stranica=1;
-    $("#trenutna").html(stranica);
-
-     $("#prethodni").click(function(){
-      stranica--;
-      if(stranica==0){
-        stranica=1;
-       
-      }
-      dohvatiPodatke(stranica,$("#uvjet").val());
-       return false;
-     });
-
-      $("#sljedeci").click(function(){
-      stranica++;
-      if(stranica>parseInt($("#ukupno").html())){
-        stranica=parseInt($("#ukupno").html());
-        
-      }
-      dohvatiPodatke(stranica,$("#uvjet").val());
-       return false;
-     }
-     
-     );
-
-       $("#trazi").click(function(){
-      stranica=1;
-      dohvatiPodatke(stranica,$("#uvjet").val());
-      
-      return false;
-      
-    });
-    
-  
-    
-
-function dohvatiPodatke(stranica,uvjet){
-
-$.ajax({
-  type: "POST",
-  url: "trazi.php",
-  data: "stranica=" + stranica + "&uvjet=" + uvjet,
-  success: function(vratioServer){
-    var sve = JSON.parse(vratioServer)
-    $("#ukupno").html(sve.ukupnoStranica);
-    $("#trenutna").html(stranica);
-    var tbody = document.getElementById("podaci");
-    while (tbody.firstChild) {
-                tbody.removeChild(tbody.firstChild);
-            }
-   
-    $.each(sve.podaci,function(kljuc,p){
-      var tr = document.createElement("tr");
-
-var td = document.createElement("td");
-img = document.createElement("img");
-img.setAttribute("title","klikni za promjenu");
-img.setAttribute("class","slika");
-img.setAttribute("id","s_" + p.sifra);
-img.setAttribute("onerror","this.src='../../img/zaposlenici/nepoznato.png';");
-img.setAttribute("src","../../img/zaposlenici/" + p.sifra + ".png");
-img.setAttribute("alt", p.prezime );
+<?php endif; ?>
 
 
-td.appendChild(img);
-tr.appendChild(td);
-
-var td = document.createElement("td");
-
-tr.appendChild(dodajCeliju(p.ime)).setAttribute("data-label", "Ime");
-tr.appendChild(dodajCeliju(p.prezime)).setAttribute("data-label", "Prezime");
-tr.appendChild(dodajCeliju(p.mob)).setAttribute("data-label", "Mobitel");
-tr.appendChild(dodajCeliju(p.radnomjesto)).setAttribute("data-label", "Radno mjesto");
-var td = document.createElement("td");
-var a = document.createElement("a");
-a.setAttribute("href","promjenaZaposlenika.php?sifra=" + p.sifra);
-var i = document.createElement("i");
-i.setAttribute("class","fas fa-edit fa-2x");
-a.appendChild(i);
-td.appendChild(a);
-
-a = document.createElement("a");
-a.setAttribute("onclick","return confirm('Sigurno obrisati " + p.ime + " " + p.prezime + "')");
-a.setAttribute("href","obrisiZaposlenika.php?sifra=" + p.sifra);
-i = document.createElement("i");
-i.setAttribute("class","far fa-trash-alt fa-2x");
-i.setAttribute("style","color: #DE1829;");
-a.appendChild(i);
-td.appendChild(a);
-tr.appendChild(td);
-
-
-
-tbody.appendChild(tr);
-        
-     
-        
-    });
-  }
-
-  
-});
-
-}
-
-
-dohvatiPodatke(stranica,"");
-
-
-
-function dodajCeliju(tekst){
-  var td= document.createElement("td");
-  var tekst = document.createTextNode(tekst==null ? "" : tekst);
-  td.appendChild(tekst);
-  return td;
-}
-
-$(function () {
+    <?php include_once "../../predlozak/skripte.php" ?>
+  <script src="https://fengyuanchen.github.io/js/common.js"></script>
+ 
+    <script src="<?php echo $putanja; ?>cropper/js/cropper.js"></script>
+    <script>
+	$(function () {
   'use strict';
 
 var slika;
@@ -290,13 +287,6 @@ var originalImageURL = $image.attr('src');
   
 });
 
-
-</script>
-
-<script src="https://fengyuanchen.github.io/js/common.js"></script>
-  <script src="<?php echo $putanja; ?>cropper/js/cropper.js"></script>
-</body>
+  </script>
+  </body>
 </html>
-
-
- 

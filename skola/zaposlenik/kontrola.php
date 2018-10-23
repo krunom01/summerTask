@@ -14,7 +14,7 @@ $errors = array();
     }
     if (empty($_POST["mob"]) or !is_numeric($_POST["mob"]) or strlen($_POST["mob"]) > 7 or strlen($_POST["mob"]) < 6 or $_POST["mob"] < 0)
     {
-    $errors["mob"] = "Krivo upisan broj mobitela"; 
+    $errors["mob"] = "Krivo upisan broj mobitela(max. 7 brojeva)"; 
     }
     if (empty($_POST["radnomjesto"]))
     {

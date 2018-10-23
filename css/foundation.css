@@ -459,8 +459,8 @@ body {
 img {
   display: block;
   vertical-align: middle;
-  max-width: 60px;;
-  height: 60px;
+  max-width: auto;
+  height: auto;;
   margin: 0 auto;
   -ms-interpolation-mode: bicubic; }
 

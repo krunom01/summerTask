@@ -8,7 +8,4 @@ $errors = array();
       {
       $errors["trener"] = "odaberi trenera";
       }
-      if (empty($_POST["brojpolaznika"]) or !is_numeric($_POST["brojpolaznika"]))
-      {
-      $errors["brojpolaznika"] = "unesi broj polaznika"; 
-      }
+     

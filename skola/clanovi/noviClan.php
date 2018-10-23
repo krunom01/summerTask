@@ -7,8 +7,7 @@
   </head>
 <?php
 
-$x=6;
-$brojUgovora = substr(str_shuffle("0123456789"), 0, $x);
+
 if(!isset($_SESSION["bok"])){
   header("location:" . $putanja . "odjava.php");
 }
@@ -21,10 +20,11 @@ if(isset($_POST["dodaj"])){
  
   include_once "kontrola.php";
   if(count($errors)==0){
+    
   $mob = $_POST["mob1"] . $_POST["mob"];
 
-  $noviZaposlenik=$veza->prepare("insert into clan(ime, prezime, oib, datumrodenja, mob, imeroditelja, prezimeroditelja, brojugovora, kategorija) 
-  values(:ime, :prezime, :oib, :datumrodenja, :mob, :imeroditelja, :prezimeroditelja, :brojugovora , :kategorija)");
+  $noviZaposlenik=$veza->prepare("insert into clan(ime, prezime, oib, datumrodenja, mob, imeroditelja, prezimeroditelja,  kategorija) 
+  values(:ime, :prezime, :oib, :datumrodenja, :mob, :imeroditelja, :prezimeroditelja, :kategorija)");
   $noviZaposlenik->bindParam(":ime", $_POST["ime"]);
   $noviZaposlenik->bindParam(":prezime", $_POST["prezime"]);
   if($_POST["oib"]===""){
@@ -39,10 +39,10 @@ if(isset($_POST["dodaj"])){
   else{
     $noviZaposlenik->bindParam(":datumrodenja", $_POST["datumrodenja"]);
   }
-  $noviZaposlenik->bindParam(":mob", $mob, PDO::PARAM_INT);
+  $noviZaposlenik->bindParam(":mob", $mob, PDO::PARAM_STR);
   $noviZaposlenik->bindParam(":imeroditelja", $_POST["imeroditelja"]);
   $noviZaposlenik->bindParam(":prezimeroditelja", $_POST["prezimeroditelja"]);
-  $noviZaposlenik->bindParam(":brojugovora", $_POST["brojugovora"]);
+ 
   $noviZaposlenik->bindParam(":kategorija", $_POST["kategorija"]);
   $noviZaposlenik->execute();
   header("location:clanovi.php");
@@ -271,7 +271,7 @@ if(isset($_POST["dodaj"])){
           <input style="margin-top:24px;"  class="button expanded" type="submit" name="dodaj" value="Dodaj novog člana">
         </div> 
 </div> 
-<input type="hidden" name="brojugovora" value="<?php echo $brojUgovora ?>">
+
 </form>
 <?php include_once "../../predlozak/footer.php"?>
 <?php include_once "../../predlozak/skripte.php"?>

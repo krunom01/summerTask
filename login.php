@@ -20,26 +20,34 @@ if(!isset($_POST["korisnik"])){
 </div>
 <div class="top-bar" id="example-menu">
 <div class="top-bar-left">
-<ul class="dropdown menu" data-dropdown-menu>
+  <ul class="dropdown menu" data-dropdown-menu>
+                
                 <li><a href="<?php echo $putanja; ?>index.php"><i class="fas fa-home" ></i></a></li>
                 <li><a href="<?php echo $putanja; ?>Onama.php">O nama</a></li>
                 <ul class="dropdown menu" data-dropdown-menu>
                 <li>
                   <a>Klub</a>
                   <ul class="menu vertical">
-                    <li><a href="<?php echo $putanja;?>/skola/kategorija.php">Kategorije</a></li>
+                 
+                    <li><a href="<?php echo $putanja;?>skola/kategorija/kategorija.php">Kategorije</a></li>
                     <?php if(isset($_SESSION["bok"])): ?>
-                    <li><a href="<?php echo $putanja;?>/skola/uprava.php">Zaposlenici</a></li>
+                    <li><a href="<?php echo $putanja;?>skola/zaposlenik/zaposlenici.php">Zaposlenici</a></li>
+                    <li><a href="<?php echo $putanja;?>skola/clanovi/clanovi.php">Članovi</a></li>
                     <?php else:?>
-                    <li><a href="<?php echo $putanja;?>/skola/uprava.php">Uprava</a></li>
+                    
+                    <li><a href="<?php echo $putanja;?>skola/zaposlenik/zaposlenici.php">Uprava</a></li>
+                    <li><a href="<?php echo $putanja;?>skola/zaposlenik/treneri.php">Treneri</a></li>
+                    
+                                    
                     <?php endif;?>
-                    <li><a href="<?php echo $putanja;?>/skola/treneri.php">Treneri</a></li>
+                    <li><a href="<?php echo $putanja;?>skola/aktivnosti/trening.php">Aktivnosti</a></li>    
+                    
                   </ul>
                 </li>
+                
               </ul>
                 <li><a href="<?php echo $putanja; ?>kontakt.php">Kontakt</a></li>
-                
-  </ul>
+   </ul>
 </div>
 </div>
   <div class="grid-x grid-padding-x" >

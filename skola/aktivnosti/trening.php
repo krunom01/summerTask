@@ -29,11 +29,9 @@
   <?php
  $izraz = $veza->prepare("
  
- select a.prezime, c.mjesto, c.vrijeme, d.naziv
- from zaposlenik a
- inner join trener b on a.sifra=b.zaposlenik
- inner join trening c on c.trener=b.sifra
- inner join kategorija d on d.sifra=c.kategorija"
+ select a.mjesto, a.vrijeme, b.naziv,b.sifra, a.sifra as sifratreninga
+from trening a
+inner join kategorija b on b.sifra=a.kategorija;"
 );
 
  $izraz->execute();
@@ -50,7 +48,7 @@
     <th>Mjesto</th>
     <th>Vrijeme</th>
     <th>Kategorija</th>
-    <th>Trener</th>
+    
   
     </tr>
     </thead>
@@ -60,8 +58,9 @@
  
       <td data-label="Mjesto"><?php echo $red->mjesto; ?></td>
       <td data-label="Vrijeme"><?php echo $red->vrijeme; ?></td>
-      <td data-label="Kategorija"><?php echo $red->naziv; ?></td>
-      <td data-label="Trener"><?php echo $red->prezime; ?></td>
+      <td data-label="naziv"><?php echo $red->naziv; ?></a>
+      
+      
       
       </tr>
     <?php endforeach;?>
