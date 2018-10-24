@@ -1,5 +1,5 @@
 <?php
-if(($_POST["korisnik"]==="a" && $_POST["lozinka"]==="a")){
+if(($_POST["korisnik"]==="kruno" && $_POST["lozinka"]==="123")){
      //pusti dalje
      session_start();
         $_SESSION["bok"]= $_POST["korisnik"];
