@@ -1,8 +1,11 @@
-alter database default character set utf8;
+drop database if exists aplikacija1;
+
+create database aplikacija1 default character set utf8;
+
+use aplikacija1;
 create table kategorija (
 sifra int not null primary key auto_increment,
 naziv varchar(20) not null,
-brojpolaznika int,
 trener int 
 );
 create table trening(
@@ -23,8 +26,8 @@ datumrodenja date,
 mob char(11),
 imeroditelja varchar(15),
 prezimeroditelja varchar(15),
-kategorija int,
-clanarina int
+kategorija int
+
 );
 create table zaposlenik (
 sifra int not null primary key auto_increment,

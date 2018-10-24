@@ -134,14 +134,7 @@ $(document).ready(function(){
   <?php include_once "../../predlozak/header.php"?>
    <?php include_once "../../predlozak/menu.php"?>
    <?php 
-   $kategorije=$veza->prepare
-   (" select c.ime, c.prezime, a.naziv, a.sifra
-   from kategorija a
-   inner join trener b on a.trener=b.sifra
-   inner join zaposlenik c on c.sifra=b.zaposlenik
-   ");
-   $kategorije->execute();
-   $rezKategorije = $kategorije->fetchall(PDO::FETCH_OBJ);
+  
    $kategorije=$veza->prepare
    (" select c.ime, c.prezime, a.naziv, a.sifra
    from kategorija a
@@ -175,10 +168,24 @@ $(document).ready(function(){
           
           ?>" alt="<?php echo $rez->naziv  ?>" />
     <h4 class="lead">Trener:<?php echo " ". $rez->ime . " " . $rez->prezime  ?></h4>
-    <button id="hide">Hide</button>
-    <button id="show">Show</button>
-    <p>The Death Star was a moon-sized Imperial military battlestation armed with a planet-destroying superlaser.</p>
-    <button id="show">Pregled igrača</button>
+    <h2 class="lead">Popis igrača:</h3>
+    <?php
+    $e=$rez->sifra;
+     $clan=$veza->prepare
+     (" select  d.ime, d.prezime
+        from kategorija a
+        inner join clan d on d.kategorija=a.sifra
+        where a.sifra= '$e'
+        
+     ");
+     $clan->execute();
+     $rezClan = $clan->fetchall(PDO::FETCH_OBJ);
+    foreach($rezClan as $r): ?>
+    <p ><?php echo  "-". $r->ime . " " . $r->prezime?></p>
+    
+    
+    <?php endforeach; ?>
+    
   </div>
   </div>
   <?php endforeach; ?>
