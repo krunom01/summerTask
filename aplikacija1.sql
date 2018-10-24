@@ -113,3 +113,13 @@ insert into clan (sifra,ime,prezime,oib,datumrodenja,mob,imeroditelja,prezimerod
 (null,'hrvoje','anic','62352326174','1992-11-11','09874754','miro','marijanovic',3),
 (null,'markan','marijanovic','62352326174','1992-11-11','09874754','miro','marijanovic',3),
 (null,'ivana','marijanovic','62352326174','1992-11-11','09874754','miro','marijanovic',3);
+
+insert into trening (sifra,mjesto,vrijeme,kategorija) values 
+(null,'Glavni teren','2018-10-22 15:30',1),
+(null,'Glavni teren','2018-10-23 15:30',1),
+(null,'Glavni teren','2018-10-24 15:30',2),
+(null,'Glavni teren','2018-10-22 15:30',2),
+(null,'Glavni teren','2018-10-23 15:30',3),
+(null,'Glavni teren','2018-10-24 15:30',3),
+(null,'Glavni teren','2018-10-22 15:30',3);
+
